@@ -21,10 +21,9 @@
     ],
     "background": {
         "scripts": ["background.js"],
-        "js": ["background.js"]
+        "persistent": false
     },
     "permissions": [
-        "background",
         "downloads",
         "http://*/*"
     ],
