@@ -78,20 +78,40 @@
 	var l = '<a href="#" id="Subtitle_download" style="font-size:0.7em;">Subtitle download</a>';
 	$('section h2') && $('section h2').last().append(l);
 	$(document).on('click', '#Subtitle_download', function() {
-		if($('li[data-index]').length == 0) {
-			alert('Apologies, but no subtitles were found.');
-			return false;
+		var subtitle_url = $($('#seq_content').find('.video').get(0)).attr('data-transcript-translation-url') + '/zh';		
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+			if(xhr.readyState == 4 && xhr.status == 200) {
+				var subtitles = [];
+				var subtitle_json = JSON.parse(xhr.responseText)
+				// console.log(subtitle_json);
+				var len = subtitle_json.start.length;
+				for (var i = 0; i < len; ++i) {
+					var start = parseTime(subtitle_json.start[i]);
+					var end = parseTime(subtitle_json.end[i]);
+					var text = subtitle_json.text[i];
+					// console.log(subtitle_json.start[i], subtitle_json.end[i], subtitle_json.text[i]);
+					subtitles.push(i + 1);
+					subtitles.push(start+' --> '+end);
+					subtitles.push(text);
+					subtitles.push('');
+				}
+				
+				export_raw($.trim($('ul li.active p').text().split(', current section')[0])+'.srt', subtitles.join('\r\n'));
+			}
 		}
-		
-		subtitles = [];		
-		$('li[data-index]').each(function() {
-			var start = parseTime($(this).attr('data-start'));
-			var end = parseTime( $(this).next().attr('data-start') ? $(this).next().attr('data-start') : +$(this).attr('data-start')+1000 );
-			subtitles.push($(this).attr('data-index'));
-			subtitles.push(start+' --> '+end);
-			subtitles.push($(this).text());
-			subtitles.push('');
-		})
-		export_raw($.trim($('ul li.active p').text().split(', current section')[0])+'.srt', subtitles.join('\r\n'));
+		xhr.open("GET", subtitle_url);
+		xhr.send(null);
+
+		// subtitles = [];		
+		// $('li[data-index]').each(function() {
+		// 	var start = parseTime($(this).attr('data-start'));
+		// 	var end = parseTime( $(this).next().attr('data-start') ? $(this).next().attr('data-start') : +$(this).attr('data-start')+1000 );
+		// 	subtitles.push($(this).attr('data-index'));
+		// 	subtitles.push(start+' --> '+end);
+		// 	subtitles.push($(this).text());
+		// 	subtitles.push('');
+		// })
+		// export_raw($.trim($('ul li.active p').text().split(', current section')[0])+'.srt', subtitles.join('\r\n'));
 	}) 
 })(jQuery);
