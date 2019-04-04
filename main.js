@@ -78,16 +78,10 @@
 	var video_btn = '<a href="#" id="Video_download" style="font-size:0.7em;">Video download\t</a>';
 	$('section h2') && $('section h2').last().append(video_btn);
 	$(document).on('click', '#Video_download', function() {
-		var video_url = $($('video').get(0)).attr('src');		
-		var xhr = new XMLHttpRequest();
-		xhr.responseType = 'blob';
-		xhr.onreadystatechange = function() {
-			if(xhr.readyState == 2 && xhr.status == 200) {
-				export_raw($.trim($('ul li.active p').text().split(', current section')[0])+'.mp4', xhr.response);
-			}
-		};
-		xhr.open("GET", video_url);
-		xhr.send(null);
+		chrome.runtime.sendMessage({
+			url: $($('video').get(0)).attr('src'),
+			filename: $.trim($('ul li.active p').text().split(', current section')[0])+'.mp4'
+		});
 	});
 
 	var sub_btn = '<a href="#" id="Subtitle_download" style="font-size:0.7em;">Subtitle download</a>';
@@ -113,18 +107,7 @@
 				export_raw($.trim($('ul li.active p').text().split(', current section')[0])+'.srt', subtitles.join('\r\n'));
 			}
 		};
-		xhr.open("GET", subtitle_url);
+		xhr.open("GET", subtitle_url, true);
 		xhr.send(null);
-
-		// subtitles = [];		
-		// $('li[data-index]').each(function() {
-		// 	var start = parseTime($(this).attr('data-start'));
-		// 	var end = parseTime( $(this).next().attr('data-start') ? $(this).next().attr('data-start') : +$(this).attr('data-start')+1000 );
-		// 	subtitles.push($(this).attr('data-index'));
-		// 	subtitles.push(start+' --> '+end);
-		// 	subtitles.push($(this).text());
-		// 	subtitles.push('');
-		// })
-		// export_raw($.trim($('ul li.active p').text().split(', current section')[0])+'.srt', subtitles.join('\r\n'));
 	});
 })(jQuery);

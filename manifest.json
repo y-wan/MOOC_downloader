@@ -19,7 +19,13 @@
             "run_at": "document_end"
         }
     ],
+    "background": {
+        "scripts": ["jquery-2.0.3.min.js", "background.js"],
+        "js": ["jquery-2.0.3.min.js", "background.js"]
+    },
     "permissions": [
+        "background",
+        "downloads",
         "http://*/*"
     ],
     "icons": {
