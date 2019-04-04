@@ -1,8 +1,8 @@
 {
 "update_url": "https://clients2.google.com/service/update2/crx",
 
-    "name": "edX & XueTangX Subtitle Download", 
-    "version": "0.6.2",
+    "name": "MOOC Downloader", 
+    "version": "0.7",
     "manifest_version": 2,
     "content_scripts": [
         {
@@ -20,8 +20,8 @@
         }
     ],
     "background": {
-        "scripts": ["jquery-2.0.3.min.js", "background.js"],
-        "js": ["jquery-2.0.3.min.js", "background.js"]
+        "scripts": ["background.js"],
+        "js": ["background.js"]
     },
     "permissions": [
         "background",
