@@ -75,22 +75,35 @@
 		return hour+':'+min+':'+second; 
 	}
 
-	var l = '<a href="#" id="Subtitle_download" style="font-size:0.7em;">Subtitle download</a>';
-	$('section h2') && $('section h2').last().append(l);
+	var video_btn = '<a href="#" id="Video_download" style="font-size:0.7em;">Video download\t</a>';
+	$('section h2') && $('section h2').last().append(video_btn);
+	$(document).on('click', '#Video_download', function() {
+		var video_url = $($('video').get(0)).attr('src');		
+		var xhr = new XMLHttpRequest();
+		xhr.responseType = 'blob';
+		xhr.onreadystatechange = function() {
+			if(xhr.readyState == 2 && xhr.status == 200) {
+				export_raw($.trim($('ul li.active p').text().split(', current section')[0])+'.mp4', xhr.response);
+			}
+		};
+		xhr.open("GET", video_url);
+		xhr.send(null);
+	});
+
+	var sub_btn = '<a href="#" id="Subtitle_download" style="font-size:0.7em;">Subtitle download</a>';
+	$('section h2') && $('section h2').last().append(sub_btn);
 	$(document).on('click', '#Subtitle_download', function() {
 		var subtitle_url = $($('#seq_content').find('.video').get(0)).attr('data-transcript-translation-url') + '/zh';		
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function() {
 			if(xhr.readyState == 4 && xhr.status == 200) {
 				var subtitles = [];
-				var subtitle_json = JSON.parse(xhr.responseText)
-				// console.log(subtitle_json);
+				var subtitle_json = JSON.parse(xhr.responseText);
 				var len = subtitle_json.start.length;
 				for (var i = 0; i < len; ++i) {
 					var start = parseTime(subtitle_json.start[i]);
 					var end = parseTime(subtitle_json.end[i]);
 					var text = subtitle_json.text[i];
-					// console.log(subtitle_json.start[i], subtitle_json.end[i], subtitle_json.text[i]);
 					subtitles.push(i + 1);
 					subtitles.push(start+' --> '+end);
 					subtitles.push(text);
@@ -99,7 +112,7 @@
 				
 				export_raw($.trim($('ul li.active p').text().split(', current section')[0])+'.srt', subtitles.join('\r\n'));
 			}
-		}
+		};
 		xhr.open("GET", subtitle_url);
 		xhr.send(null);
 
@@ -113,5 +126,5 @@
 		// 	subtitles.push('');
 		// })
 		// export_raw($.trim($('ul li.active p').text().split(', current section')[0])+'.srt', subtitles.join('\r\n'));
-	}) 
+	});
 })(jQuery);
