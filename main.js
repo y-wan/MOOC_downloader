@@ -43,26 +43,6 @@
 	/** edX **/
 	if(!$('li[data-index]')) return false;
 	
-	function fake_click(obj) {
-	    var ev = document.createEvent("MouseEvents");
-	    ev.initMouseEvent(
-	        "click", true, false, window, 0, 0, 0, 0, 0
-	        , false, false, false, false, 0, null
-	        );
-	    obj.dispatchEvent(ev);
-	}
-
-	function export_raw(name, data) {
-	    var urlObject = window.URL || window.webkitURL || window;
-
-	    var export_blob = new Blob([data]);
-
-	    var save_link = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
-	    save_link.href = urlObject.createObjectURL(export_blob);
-	    save_link.download = name;
-	    fake_click(save_link);
-	}
-
 	function parseTime(time) {
 		var min = Math.floor(time / 60000);
 		var hour = Math.floor(time / 3600000);
@@ -103,8 +83,12 @@
 					subtitles.push(text);
 					subtitles.push('');
 				}
-				
-				export_raw($.trim($('ul li.active p').text().split(', current section')[0])+'.srt', subtitles.join('\r\n'));
+				var blob = new Blob([subtitles.join('\r\n')]);
+				var blob_url = URL.createObjectURL(blob);
+				chrome.runtime.sendMessage({
+					url: blob_url,
+					filename: $.trim($('ul li.active p').text().split(', current section')[0])+'.srt'
+				});
 			}
 		};
 		xhr.open("GET", subtitle_url, true);
