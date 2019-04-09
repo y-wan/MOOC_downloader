@@ -55,17 +55,20 @@
 		return hour+':'+min+':'+second; 
 	}
 
-	var video_btn = '<a href="#" id="Video_download" style="font-size:0.7em;">Video download\t</a>';
-	$('section h2') && $('section h2').last().append(video_btn);
+	if ($('#seq_content').find('.video').get(0) !== undefined) {		
+		var video_btn = '<a href="#" id="Video_download" style="font-size:0.7em;">Video download\t</a>';
+		$('section h2') && $('section h2').last().append(video_btn);
+		var sub_btn = '<a href="#" id="Subtitle_download" style="font-size:0.7em;">Subtitle download</a>';
+		$('section h2') && $('section h2').last().append(sub_btn);
+	}
+
 	$(document).on('click', '#Video_download', function() {
 		chrome.runtime.sendMessage({
 			url: $($('video').get(0)).attr('src'),
 			filename: $.trim($('ul li.active p').text().split(', current section')[0])+'.mp4'
 		});
 	});
-
-	var sub_btn = '<a href="#" id="Subtitle_download" style="font-size:0.7em;">Subtitle download</a>';
-	$('section h2') && $('section h2').last().append(sub_btn);
+	
 	$(document).on('click', '#Subtitle_download', function() {
 		var subtitle_url = $($('#seq_content').find('.video').get(0)).attr('data-transcript-translation-url') + '/zh';		
 		var xhr = new XMLHttpRequest();
